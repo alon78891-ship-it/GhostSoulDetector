@@ -1,0 +1,55 @@
+name: Build Matrix Radar HUD APK
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Matrix_Radar_HUD_Source.zip"
+      - ".github/workflows/build-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Android project from ZIP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip
+          mkdir -p appsrc
+          unzip -o Matrix_Radar_HUD_Source.zip -d appsrc
+          test -f appsrc/main.py
+          test -f appsrc/buildozer.spec
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Buildozer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip python3-pip python3-venv             autoconf automake libtool pkg-config zlib1g-dev libncurses-dev             libtinfo6 cmake libffi-dev libssl-dev build-essential ccache             libltdl-dev
+          python3 -m pip install --user --upgrade pip setuptools wheel
+          python3 -m pip install --user "Cython==0.29.36" "buildozer==1.5.0"
+
+      - name: Build debug APK
+        working-directory: appsrc
+        env:
+          PATH: /home/runner/.local/bin:${{ env.PATH }}
+        run: buildozer android debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: matrix-radar-hud-apk
+          path: appsrc/bin/*.apk
+          if-no-files-found: error
