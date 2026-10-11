@@ -27,6 +27,9 @@ jobs:
           unzip -o Matrix_Radar_HUD_Source.zip -d appsrc
           test -f appsrc/main.py
           test -f appsrc/buildozer.spec
+          # Pin Python to a stable Android-supported release; latest python3 recipe selected 3.14 and failed on preadv/pwritev.
+          sed -i 's/requirements = python3,/requirements = python3==3.11.5,/' appsrc/buildozer.spec
+          grep '^requirements' appsrc/buildozer.spec
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -52,5 +55,3 @@ jobs:
           name: matrix-radar-hud-apk
           path: appsrc/bin/*.apk
           if-no-files-found: error
-
-# Trigger APK build run.
