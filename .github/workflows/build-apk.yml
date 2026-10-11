@@ -37,14 +37,13 @@ jobs:
       - name: Install Buildozer dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip python3-pip python3-venv             autoconf automake libtool pkg-config zlib1g-dev libncurses-dev             libtinfo6 cmake libffi-dev libssl-dev build-essential ccache             libltdl-dev
+          sudo apt-get install -y git zip unzip python3-pip python3-venv autoconf automake libtool pkg-config zlib1g-dev libncurses-dev libtinfo6 cmake libffi-dev libssl-dev build-essential ccache libltdl-dev
           python3 -m pip install --user --upgrade pip setuptools wheel
           python3 -m pip install --user "Cython==0.29.36" "buildozer==1.5.0"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Build debug APK
         working-directory: appsrc
-        env:
-          PATH: /home/runner/.local/bin:${{ env.PATH }}
         run: buildozer android debug
 
       - name: Upload APK artifact
