@@ -52,3 +52,5 @@ jobs:
           name: matrix-radar-hud-apk
           path: appsrc/bin/*.apk
           if-no-files-found: error
+
+# Trigger APK build run.
