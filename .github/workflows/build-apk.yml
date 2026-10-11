@@ -28,8 +28,10 @@ jobs:
           test -f appsrc/main.py
           test -f appsrc/buildozer.spec
           # Pin Python to a stable Android-supported release; latest python3 recipe selected 3.14 and failed on preadv/pwritev.
-          sed -i 's/requirements = python3,/requirements = python3==3.11.5,/' appsrc/buildozer.spec
-          grep '^requirements' appsrc/buildozer.spec
+          sed -i 's/requirements = python3==3.11.5,/requirements = python3,/' appsrc/buildozer.spec
+          # Use a stable python-for-android release so python3 and hostpython3 versions match.
+          printf '\np4a.branch = v2024.01.21\n' >> appsrc/buildozer.spec
+          grep -E '^(requirements|p4a.branch)' appsrc/buildozer.spec
 
       - name: Set up Java
         uses: actions/setup-java@v4
